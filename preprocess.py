@@ -10,6 +10,9 @@ TRACE_PATH = os.getenv('TRACE_PATH')
 FIRST_STEP_PATH = os.getenv('FIRST_STEP_PATH')
 TRACE_OUTPUT_PATH = os.getenv('TRACE_OUTPUT_PATH')
 LBA_FREQ_PATH = os.getenv('LBA_FREQ_PATH')
+LOGIC_BYTES = int(os.getenv('LOGIC_BYTES'))
+START_POINT = int(os.getenv('START_POINT'))
+END_POINT = int(os.getenv('END_POINT'))
 
 def GetLbaFreq():
     lba_frequency = {}
@@ -62,11 +65,33 @@ def Preprocess():
             if operation_type == 'Write':
                 # Write the desired fields to the output file
                 writer.writerow(['2', fid, lba, offset])
+            
+    print("Preprocessing complete.")
+
+def JESDPreprocess():
+    with open(TRACE_PATH, 'r') as file_in, open(FIRST_STEP_PATH, 'w', newline='') as file_out:
+        reader = csv.reader(file_in)
+        writer = csv.writer(file_out)
+        count = 0
+        for row in reader:
+            if row[0] == '$flush':
+                continue
+            operation_type, lba, offset = row[0].split(' ')
+            if operation_type == '$write':
+                lba = int(lba) * LOGIC_BYTES
+                offset = int(offset) * LOGIC_BYTES
+                if count >= START_POINT:
+                    writer.writerow(['2', 9999, lba, offset])
+                count += 1
+                if count == END_POINT:
+                    break
+            
     print("Preprocessing complete.")
 
 def main():
+    JESDPreprocess()
     # Preprocess()
-    # GetTargetAnswer()
+    GetTargetAnswer()
     GetLbaFreq()
 
 if __name__ == "__main__":
