@@ -53,6 +53,7 @@ def Preprocess():
         reader = csv.reader(file_in)
         writer = csv.writer(file_out)
         # Process each row in the input file
+        count = 0
         for row in reader:
             # Extract relevant fields from the current row
             fid = row[0]
@@ -63,9 +64,12 @@ def Preprocess():
             offset = row[5]
             # Convert operation type to '2' if it's 'Write', otherwise skip the row
             if operation_type == 'Write':
-                # Write the desired fields to the output file
-                writer.writerow(['2', fid, lba, offset])
-            
+                if count >= START_POINT:
+                    # Write the desired fields to the output file
+                    writer.writerow(['2', fid, lba, offset])
+                count += 1
+                if count == END_POINT:
+                    break
     print("Preprocessing complete.")
 
 def JESDPreprocess():
@@ -91,8 +95,8 @@ def JESDPreprocess():
 def main():
     JESDPreprocess()
     # Preprocess()
-    GetTargetAnswer()
-    GetLbaFreq()
+    # GetTargetAnswer()
+    # GetLbaFreq()
 
 if __name__ == "__main__":
     main()
