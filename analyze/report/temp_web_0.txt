@@ -1,0 +1,6 @@
+Trace Length: 900000
+Sequential Percentage: 8.040%
+Random Percentage: 91.960%
+Total Data Write: 7.445 GB
+Total Footprint: 0.936 GB
+LBA Range: 33.909 - 0.000 GB
